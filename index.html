@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airport CRUD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #2980b9;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3498db;
+        }
+        .airport-item {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .airport-item div {
+            margin-bottom: 5px;
+        }
+        .airport-item button {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Airport CRUD Operations</h1>
+    
+    <!-- Form for adding or updating airport -->
+    <form id="airport_form" action="{{ url_for('add_airport') }}" method="post">
+        <input type="hidden" id="form_action" name="form_action" value="add">
+        
+        <label for="airport_code">Airport Code:</label>
+        <input type="text" id="airport_code" name="airport_code" required>
+        
+        <label for="airport_name">Airport Name:</label>
+        <input type="text" id="airport_name" name="airport_name" required>
+        
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+        
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" required>
+        
+        <label for="timezone_offset">Timezone Offset:</label>
+        <input type="text" id="timezone_offset" name="timezone_offset" required>
+        
+        <label for="latitude">Latitude:</label>
+        <input type="number" step="any" id="latitude" name="latitude" required>
+        
+        <label for="longitude">Longitude:</label>
+        <input type="number" step="any" id="longitude" name="longitude" required>
+        
+        <button type="submit">Add Airport</button>
+    </form>
+    
+    <hr>
+    
+    <!-- List of current airports -->
+    <h2>Current Airports</h2>
+    <div id="airports_list">
+        {% if airports %}
+            <ul>
+                {% for airport in airports %}
+                    <li class="airport-item">
+                        <div>
+                            <strong>{{ airport.airport_code }}</strong> - {{ airport.airport_name }}, {{ airport.city }}, {{ airport.country }} (Timezone: {{ airport.timezone_offset }}, Lat: {{ airport.latitude }}, Lon: {{ airport.longitude }})
+                        </div>
+                        <div>
+                            <form action="/delete_airport/{{ airport.airport_code }}" method="post">
+                                <button type="submit">Delete</button>
+                            </form>
+                            <button onclick="editAirport('{{ airport.airport_code }}', '{{ airport.airport_name }}', '{{ airport.city }}', '{{ airport.country }}', '{{ airport.timezone_offset }}', {{ airport.latitude }}, {{ airport.longitude }})">Edit</button>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No airports found.</p>
+        {% endif %}
+    </div>
+    
+    <script>
+        function editAirport(airportCode, airportName, city, country, timezoneOffset, latitude, longitude) {
+            document.getElementById('airport_code').value = airportCode;
+            document.getElementById('airport_name').value = airportName;
+            document.getElementById('city').value = city;
+            document.getElementById('country').value = country;
+            document.getElementById('timezone_offset').value = timezoneOffset;
+            document.getElementById('latitude').value = latitude;
+            document.getElementById('longitude').value = longitude;
+            document.getElementById('airport_form').action = `/update_airport/${airportCode}`;
+            document.getElementById('form_action').value = 'update';
+            document.querySelector('#airport_form button[type="submit"]').innerText = 'Update Airport';
+        }
+    </script>
+</body>
+</html>
